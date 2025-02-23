@@ -33,6 +33,10 @@ namespace Coding_Challenge.Services
         // Method to create a new task asynchronously
         public async Task<TaskItem> CreateTaskAsync(TaskItem task)
         {
+            task.CreatedAt = DateTime.UtcNow; // Set creation timestamp
+            task.UpdatedAt = null;
+            task.CompletionDate = null;
+
             // Add the new task to the database
             _context.Tasks.Add(task);
             // Save changes to the database
@@ -44,10 +48,12 @@ namespace Coding_Challenge.Services
         // Method to update an existing task asynchronously
         public async Task<bool> UpdateTaskAsync(int id, TaskItem task)
         {
-            // Check if the ID of the task to update matches the given ID
-            if (id != task.Id) return false;
-            // Mark the task as modified in the database context
-            _context.Entry(task).State = EntityState.Modified;
+            var existingTask = await _context.Tasks.FindAsync(id);
+            if (existingTask == null) return false;
+
+            // Update task details
+            existingTask.UpdateTask(task.Title, task.Description, task.DueDate, task.Priority,task.Status, task.AssignedTo);
+
             // Save changes to the database
             await _context.SaveChangesAsync();
             // Return true to indicate success
@@ -59,13 +65,26 @@ namespace Coding_Challenge.Services
         {
             // Find the task with the given ID
             var task = await _context.Tasks.FindAsync(id);
-            // If the task is not found, return false
+            
             if (task == null) return false;
+
             // Remove the task from the database
             _context.Tasks.Remove(task);
-            // Save changes to the database
+            
             await _context.SaveChangesAsync();
             // Return true to indicate success
+            return true;
+        }
+
+        // Method to mark a task as completed
+        public async Task<bool> MarkTaskCompleteAsync(int id)
+        {
+            var task = await _context.Tasks.FindAsync(id);
+            if (task == null) return false;
+
+            // Mark the task as completed and set the completion date
+            task.MarkComplete();
+            await _context.SaveChangesAsync();
             return true;
         }
     }

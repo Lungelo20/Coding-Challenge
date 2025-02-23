@@ -8,5 +8,17 @@ namespace Coding_Challenge.Data
     {
         public TaskDbContext(DbContextOptions<TaskDbContext> options) : base(options) { }
         public DbSet<TaskItem> Tasks { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            // Store enums as strings in the database for readability
+            modelBuilder.Entity<TaskItem>()
+                .Property(t => t.Status)
+                .HasConversion<string>();
+
+            modelBuilder.Entity<TaskItem>()
+                .Property(t => t.Priority)
+                .HasConversion<string>();
+        }
     }
 }

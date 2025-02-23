@@ -73,6 +73,16 @@ namespace Coding_Challenge.Controllers
             // Return a NoContent response to indicate success
             return NoContent();
         }
+
+        /// <summary> Marks a task as completed </summary>
+        [HttpPatch("{id}/complete")]
+        public async Task<IActionResult> MarkTaskComplete(int id)
+        {
+            var success = await _taskService.MarkTaskCompleteAsync(id);
+            if (!success) return NotFound(new { message = "Task not found or already completed" });
+
+            return Ok(new { message = "Task marked as completed" });
+        }
     }
 
 }

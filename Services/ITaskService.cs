@@ -9,5 +9,6 @@ namespace Coding_Challenge.Services
         Task<TaskItem> CreateTaskAsync(TaskItem task);
         Task<bool> UpdateTaskAsync(int id, TaskItem task);
         Task<bool> DeleteTaskAsync(int id);
+        Task<bool> MarkTaskCompleteAsync(int id);
     }
 }
